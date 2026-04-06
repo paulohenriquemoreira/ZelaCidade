@@ -1,0 +1,119 @@
+const sqlite3 = require("sqlite3");
+const { open } = require("sqlite");
+
+const criarBanco = async () => {
+  const db = await open({
+    filename: "./database.db",
+    driver: sqlite3.Database,
+  });
+
+  //Criando a tabela de incidentes
+
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS incidentes(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tipo_problema TEXT,     --O que aconteceu (Buraco, Lixo, Luz...)
+        localizacao TEXT,       --Onde aconteceu (Rua, Bairro)
+        descricao TEXT,         --Detalhes da reclamação
+        prioridade TEXT,        --Baixa, Média ou Alta
+        nome_solicitante TEXT,  --Quem está avisando
+        data_registro TEXT,     --Data em formato (ex:16/03 16.03)
+        hora_registro TEXT,     --Hora que foi registrado
+        status_resolvido TEXT DEFAULT 'Pendente'
+    )
+    `);
+
+  console.log("Tabela criada com sucesso!");
+
+  //**************************
+  //Insert - C do CRUD - CREATE
+  //**************************
+
+  //
+  const checagem = await db.get(`SELECT COUNT (*) AS total FROM incidentes`);
+
+  if (checagem.total === 0) {
+    await db.exec(`
+          INSERT INTO incidentes(tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro
+          ) VALUES
+          ('Iluminação', 'Rua das Flores, 123, Bairro das Margaridas', 'Poste queimado há dias', 'Média', 'Ana Clara', '16/03/2026', '10:30'),
+          ('Falta de energia', 'Hospital JP2','Local na escuridão', 'Alta', 'Antonio Perna Quebrada', '16/03/2026', '22:15'),
+          ('Vazamento de água', 'Rua das Camélias, 52', 'Vazamento de água constante próximo ao bueiro.', 'Alta', 'Julia Martins', '2026-03-16', '10:00')
+      `);
+  } else {
+    console.log(`Banco pronto com ${checagem.total} de incidentes.`);
+  }
+
+  //**************************
+  //Select - R do CRUD - READ
+  //**************************
+
+  const todosOsIncidentes = await db.all("SELECT * FROM incidentes");
+  console.table(todosOsIncidentes);
+
+  //Exemplo de SELECT especifico
+
+  const chamadosAna = await db.all(
+    `SELECT * FROM incidentes WHERE nome_solicitante = "Ana Clara"`,
+  );
+
+  console.table(chamadosAna);
+
+  //**************************
+  //Update - U do CRUD - Update
+  //**************************
+
+  await db.run(`
+  UPDATE incidentes
+  SET status_resolvido = "Em Análise"
+  WHERE data_registro = "16/03/2026"
+  
+`);
+
+  console.log(
+    "Todas as reclamações do dia 16/03/2026 tiveram uma atualização!",
+  );
+
+//Update exemplo 2
+
+  await db.run(`
+    UPDATE incidentes
+    SET status_resolvido = "Resolvido"
+    WHERE tipo_problema = "Falta de energia"  
+  `);
+
+  console.log("Problema no hospital resolvido!")
+
+
+  //Update exemplo 3
+  await db.run(`
+    UPDATE incidentes
+    SET data_registro = "16/03/2026"
+    WHERE nome_solicitante = "Julia Martins"  
+  `)
+  
+  console.log("Data corrigida da solicitante Julia Martins.")
+
+
+  //**************************
+  //Delete - D do CRUD - Delete
+  //**************************
+
+    await db.run(`DELETE FROM incidentes WHERE id = 2`)
+    console.log("Registro do ID 2 removido!")
+
+
+  //**************************
+  //Relatório atualizado/SELECT FINAL
+  //**************************
+
+  
+  const resultadoFinal = await db.all(`SELECT * FROM incidentes`);
+  console.table(resultadoFinal)
+
+  return db; // Retorna o banco
+
+
+};
+
+module.exports = {criarBanco};
