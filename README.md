@@ -10,7 +10,7 @@ A **ZelaCidade API** é uma API RESTful desenvolvida para o registro e gerenciam
 - 🗑️ Lixo
 - 💡 Iluminação pública
 
-A API permite operações completas de **CRUD**:
+### 🔗 A API permite operações completas de **CRUD**:
 - Criar
 - Listar
 - Atualizar
@@ -40,7 +40,7 @@ Centralizar e organizar o registro de problemas urbanos, facilitando a comunica�
 npm install
 ```
 
-## ▶️Como Executar
+### ▶️Como Executar
 
 ```bash
 npm run dev
@@ -72,7 +72,7 @@ A aplicação estará disponível em:
 
 ---
 
-🗄️ Banco de Dados
+## 🗄️ Banco de Dados
 
 O banco é criado automaticamente ao iniciar a aplicação.
 
@@ -96,38 +96,38 @@ database.db
 
 
 ## 🔗 Endpoints
-## 📍 Rota Inicial
+### 📍 Rota Inicial
 
 ```http
 GET /
 ```
 Retorna uma página HTML com informações básicas da API.
 
-# 📄 Listar todos os incidentes
+#### 📄 Listar todos os incidentes
 
 ```http
 GET /incidentes
 ```
 
-# 🔍 Buscar incidente por ID
+#### 🔍 Buscar incidente por ID
 
 ```http
 GET /incidentes/:id
 ```
 
-# 📌 Exemplo:
+ 📌 Exemplo:
 
 ```http
 GET /incidentes/1
 ```
 
-## ➕ Criar novo incidente
+### ➕ Criar novo incidente
 
 ```http
 POST /incidentes
 ```
 
-## Body (JSON)
+#### Body (JSON)
 
 ```json
 {
@@ -141,13 +141,13 @@ POST /incidentes
 }
 ```
 
-## ✏️ Atualizar incidente
+### ✏️ Atualizar incidente
 
 ```http
 PUT /incidentes/:id
 ```
 
-## Body (JSON)
+#### Body (JSON)
 
 ```json
 {
@@ -157,7 +157,7 @@ PUT /incidentes/:id
 }
 ```
 
-## ❌ Deletar incidente
+### ❌ Deletar incidente
 
 ```http
 DELETE /incidentes/:id
@@ -165,12 +165,12 @@ DELETE /incidentes/:id
 
 ## 🔐 Segurança
 
-# A API utiliza queries parametrizadas para evitar SQL Injection:
+ A API utiliza queries parametrizadas para evitar SQL Injection:
 
 ```SQL
 WHERE id = ?
 ```
-# ✔️ Boa prática essencial em aplicações backend
+ ✔️ Boa prática essencial em aplicações backend
 
 
 ## 📚 Conceitos Aplicados
