@@ -44,3 +44,29 @@ app.get("/incidentes", async (req, res) => {
     
 
 })
+
+
+//Rota Específica
+
+app.get("/incidentes/:id", async (req, res) => {
+
+    const {id} = req.params //Pega o id da url
+    const db = await criarBanco() //Abre a conexão com o banco de dados.
+    const incidenteEspecifico = await db.all(`SELECT *  FROM incidentes WHERE id = ?`, [id]) // O ponto de Interrogação é o espaço a ser preenchido. O sinal de ? é o SQL Injection que é usado para segurança.
+    res.json(incidenteEspecifico) 
+
+});
+
+//Rota POST - Novos Registros
+
+app.post("/incidentes", async (req, res) => {
+
+    const {tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro} = req.body
+
+    const db = await criarBanco()
+
+    await db.run(`INSERT INTO incidentes(tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro) VALUES (?,?,?,?,?,?,?)`, [tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro])
+
+    res.send(`Incidente novo registrado: ${tipo_problema} registrado na data ${data_registro}`)
+
+})
