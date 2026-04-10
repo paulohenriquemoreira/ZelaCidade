@@ -1,20 +1,22 @@
-# 🚀 API ZelaCidade - Em construção...
+# 🏙️ API ZelaCidade
 
 ## 📌 Sobre o Projeto
 
-A **ZelaCidade API** é uma API RESTful desenvolvida para o registro e gerenciamento de problemas urbanos, permitindo que cidadãos reportem ocorrências de forma estruturada.
+A **ZelaCidade API** é uma API  desenvolvida para o registro e gerenciamento de problemas urbanos, permitindo que cidadãos reportem ocorrências de forma estruturada.
 
 ### 🧩 Tipos de ocorrências suportadas:
+
 - 🕳️ Buracos
 - 💧 Vazamentos
 - 🗑️ Lixo
 - 💡 Iluminação pública
 
 ### 🔗 A API permite operações completas de **CRUD**:
-- Criar
-- Listar
-- Atualizar
-- Remover incidentes
+
+- ➕Criar
+- 📝Listar
+- 🔄Atualizar
+- 🗑️Remover Incidentes
 
 ---
 
@@ -28,7 +30,7 @@ Centralizar e organizar o registro de problemas urbanos, facilitando a comunica�
 
 - **Node.js** — Ambiente de execução
 - **Express** — Framework web
-- **SQLite3** — Banco de dados leve e local
+- **SQLite/SQLite3** — Banco de dados leve e local
 - **Nodemon** — Reload automático em desenvolvimento
 - **Postman** — Testes de requisições HTTP
 
@@ -180,5 +182,5 @@ WHERE id = ?
 - Arquitetura básica em camadas
 - Métodos HTTP (GET, POST, PUT, DELETE)
 
-  ## 👨‍💻 Autor
-  #Projeto desenvolvido para fins educacionais com foco em aprendizado de backend.
+## 👨‍💻 Autor
+ #Projeto desenvolvido para fins educacionais com foco em aprendizado de backend.
