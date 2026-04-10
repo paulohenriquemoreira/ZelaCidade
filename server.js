@@ -3,7 +3,11 @@
 const express = require("express"); //Framework que cria o servidor e as rotas.
 const { criarBanco } = require("./database"); //A chave que vai abrir a conexão com o banco de dados.
 
+const cors = require("cors"); // Importando o pacote que gerencia as permissões de acesso
+
 const app = express(); //Inicialização do motor do servidor.
+
+app.use(cors()); //Ativando o CORS no servidor.
 
 app.use(express.json()); // configura o express para entender dados enviados no formato JSON.
 
@@ -20,13 +24,6 @@ app.get("/", (req, res) => {
         </body>    
         
     `);
-});
-
-//Porta do Servidor
-
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 
 //Rota de Listagem: Para buscar todos os problemas registrados.
@@ -108,23 +105,28 @@ app.put("/incidentes/:id", async (req, res) => {
   res.send(`O incidente de ${id} foi atualizada com sucesso!`);
 });
 
-
 //Rota DELETE - Rota de remoção
 
 // Para remoção sempre citar o :id ex: "/incidentes/:id"
-app.delete("/incidentes/:id",  async (req, res) => {
+app.delete("/incidentes/:id", async (req, res) => {
+  const { id } = req.params;
 
-    const {id} = req.params;
-    
-    const db = await criarBanco()
+  const db = await criarBanco();
 
-    await db.run(`
+  await db.run(
+    `
         
         DELETE FROM incidentes WHERE id = ?`,
-        [id]        
-    )
+    [id],
+  );
 
-    res.send(`O incidente de ${id} foi removido com sucesso!`);
+  res.send(`O incidente de ${id} foi removido com sucesso!`);
+});
 
+//Porta do Servidor
 
-})
+//Criando uma variável inteligente para a porta.
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
