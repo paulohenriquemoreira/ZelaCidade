@@ -1,18 +1,17 @@
 //Importações
 
-const express = require('express') //Framework que cria o servidor e as rotas.
-const {criarBanco} = require('./database') //A chave que vai abrir a conexão com o banco de dados.
+const express = require("express"); //Framework que cria o servidor e as rotas.
+const { criarBanco } = require("./database"); //A chave que vai abrir a conexão com o banco de dados.
 
 const app = express(); //Inicialização do motor do servidor.
 
-app.use(express.json()) // configura o express para entender dados enviados no formato JSON.
+app.use(express.json()); // configura o express para entender dados enviados no formato JSON.
 
 //Criando a rota principal - Raiz
 
 app.get("/", (req, res) => {
-
-    //res.send: Envia uma resposta simples(texto, html, json)
-    res.send(`
+  //res.send: Envia uma resposta simples(texto, html, json)
+  res.send(`
         <body>
             <h1>ZelaCidade</h1>
             <h2>Gestão de Problemas Urbanos</h2>
@@ -21,52 +20,111 @@ app.get("/", (req, res) => {
         </body>    
         
     `);
-
 });
 
 //Porta do Servidor
 
 const PORT = 3000;
 app.listen(PORT, () => {
-console.log(`Servidor rodando em http://localhost:${PORT}`)
-
-
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 
 //Rota de Listagem: Para buscar todos os problemas registrados.
 
 app.get("/incidentes", async (req, res) => {
+  const db = await criarBanco();
 
-    const db = await criarBanco()
-
-    const listaIncidentes = await db.all(`SELECT * FROM incidentes`);
-    res.json(listaIncidentes);
-    
-
-})
-
+  const listaIncidentes = await db.all(`SELECT * FROM incidentes`);
+  res.json(listaIncidentes);
+});
 
 //Rota Específica
 
 app.get("/incidentes/:id", async (req, res) => {
-
-    const {id} = req.params //Pega o id da url
-    const db = await criarBanco() //Abre a conexão com o banco de dados.
-    const incidenteEspecifico = await db.all(`SELECT *  FROM incidentes WHERE id = ?`, [id]) // O ponto de Interrogação é o espaço a ser preenchido. O sinal de ? é o SQL Injection que é usado para segurança.
-    res.json(incidenteEspecifico) 
-
+  const { id } = req.params; //Pega o id da url
+  const db = await criarBanco(); //Abre a conexão com o banco de dados.
+  const incidenteEspecifico = await db.all(
+    `SELECT *  FROM incidentes WHERE id = ?`,
+    [id],
+  ); // O ponto de Interrogação é o espaço a ser preenchido. O sinal de ? é o SQL Injection que é usado para segurança.
+  res.json(incidenteEspecifico);
 });
 
 //Rota POST - Novos Registros
 
 app.post("/incidentes", async (req, res) => {
+  const {
+    tipo_problema,
+    localizacao,
+    descricao,
+    prioridade,
+    nome_solicitante,
+    data_registro,
+    hora_registro,
+  } = req.body;
 
-    const {tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro} = req.body
+  const db = await criarBanco();
 
+  await db.run(
+    `INSERT INTO incidentes(tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro) VALUES (?,?,?,?,?,?,?)`,
+    [
+      tipo_problema,
+      localizacao,
+      descricao,
+      prioridade,
+      nome_solicitante,
+      data_registro,
+      hora_registro,
+    ],
+  );
+
+  res.send(
+    `Incidente novo registrado: ${tipo_problema} registrado na data ${data_registro}`,
+  );
+});
+
+//Rota PUT - Atualização
+
+app.put("/incidentes/:id", async (req, res) => {
+  //Pega o ID do incidente que vem pela URL (ex: /incidentes/4)
+  const { id } = req.params;
+
+  //Pega os novos dados no corpo da requisição (o que será atualizado)
+  const { descricao, prioridade, status_resolvido } = req.body;
+
+  const db = await criarBanco();
+
+  await db.run(
+    `
+        UPDATE incidentes
+        SET descricao = ?,
+        prioridade = ?,
+        status_resolvido = ?
+        WHERE id = ?`,
+    [descricao, prioridade, status_resolvido, id],
+  );
+
+  //Enviar resposta ao cliente/usuário
+  res.send(`O incidente de ${id} foi atualizada com sucesso!`);
+});
+
+
+//Rota DELETE - Rota de remoção
+
+// Para remoção sempre citar o :id ex: "/incidentes/:id"
+app.delete("/incidentes/:id",  async (req, res) => {
+
+    const {id} = req.params;
+    
     const db = await criarBanco()
 
-    await db.run(`INSERT INTO incidentes(tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro) VALUES (?,?,?,?,?,?,?)`, [tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro])
+    await db.run(`
+        
+        DELETE FROM incidentes WHERE id = ?`,
+        [id]        
+    )
 
-    res.send(`Incidente novo registrado: ${tipo_problema} registrado na data ${data_registro}`)
+    res.send(`O incidente de ${id} foi removido com sucesso!`);
+
 
 })
